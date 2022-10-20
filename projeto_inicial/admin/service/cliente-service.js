@@ -1,12 +1,14 @@
 /**inicializando a fetch */
-const listaClientes = () => {
+const listaClientes = async () => {
     /**por padrão faz get e devolve promise */
-    return fetch(`http://localhost:3000/profile`).then((resposta) => {
+    const resposta = await fetch(`http://localhost:3000/profile`);
+    if (resposta.ok) {
         return resposta.json();
-    });
+    }
+    throw new Error("Não foi possível listar os clientes");
 };
-const criaCliente = (nome, email) => {
-    return fetch(`http://localhost:3000/profile`, {
+const criaCliente = async (nome, email) => {
+    const resposta = await fetch(`http://localhost:3000/profile`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -14,51 +16,50 @@ const criaCliente = (nome, email) => {
         body: JSON.stringify({
             nome: nome,
             email: email,
-        })
-    })
-    .then(resposta => {
-        return resposta.body
+        }),
     });
+    if (resposta.ok) {
+        return resposta.body;
+    }
+    throw new Error("Não foi possível criar um  cliente");
 };
-const removeCliente = (id)=> {
-    return fetch(`http://localhost:3000/profile/${id}`, {
+const removeCliente = async (id) => {
+    const resposta = await fetch(`http://localhost:3000/profile/${id}`, {
+        method: "DELETE",
+    });
+    if (!resposta.ok) {
+        throw new Error("Não foi possível remover um cliente");
+    }
+};
+const detalhaCliente = async (id) => {
+    const resposta = await fetch(`http://localhost:3000/profile/${id}`);
+    if (resposta.ok) {
+        return resposta.json();
+    }
+    throw new Error("Não foi possível detalhar o cliente");
+};
 
-    method: 'DELETE'
-})
-
-
-}
-const detalhaCliente = (id) =>{
-    return fetch(`http://localhost:3000/profile/${id}`)
-    .then(resposta => {
-        return resposta.json()
-    })
-}
-
-const atualizaCliente = (id, nome, email) => {
-    return fetch(`http://localhost:3000/profile/${id}`, {
+const atualizaCliente = async (id, nome, email) => {
+    const resposta = await fetch(`http://localhost:3000/profile/${id}`, {
         method: "PUT",
         headers: {
-            "Content-Type" : "application/json"
+            "Content-Type": "application/json",
         },
         body: JSON.stringify({
             nome: nome,
             email: email,
-
-        })
-    })
-    .then(resposta => {
-        return resposta.json()
-    })
-
-}
-
+        }),
+    });
+    if (resposta.ok) {
+        return resposta.json();
+    }
+    throw new Error("Não foi possível atualizar o cliente");
+};
 
 export const clienteService = {
     listaClientes,
     criaCliente,
     removeCliente,
     detalhaCliente,
-    atualizaCliente
-    
+    atualizaCliente,
 };
